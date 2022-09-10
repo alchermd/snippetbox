@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var (
@@ -23,7 +24,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 // Handles showing of a snippet.
 func showSnippet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Display a specific snippet")
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	fmt.Fprintf(w, "Showing snippet with ID=%d.", id)
 }
 
 // Handles creation of a snippet.
