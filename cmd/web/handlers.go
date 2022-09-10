@@ -2,13 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
-)
-
-var (
-	serverPort = ":4000"
 )
 
 // Define a home handler function which writes a welcome message to the response body.
@@ -44,17 +39,4 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "Create a new snippet")
-}
-
-func main() {
-	// Create a new servemux and apply handler mappings.
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
-
-	// Start a server on the given port and logging any potential error.
-	log.Printf("Starting server on %s", serverPort)
-	err := http.ListenAndServe(serverPort, mux)
-	log.Fatal(err)
 }
