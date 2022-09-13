@@ -28,21 +28,11 @@ func main() {
 		infoLog:  infoLog,
 	}
 
-	// Create a new servemux and apply handler mappings.
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet", app.showSnippet)
-	mux.HandleFunc("/snippet/create", app.createSnippet)
-
-	// Serve static assets.
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
 	// Initialize a server struct to use the custom error logger.
 	srv := &http.Server{
 		Addr:     *serverPort,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	// Start a server on the given port and logging any potential error.
