@@ -1,15 +1,16 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
-var (
-	serverPort = ":4000"
-)
-
 func main() {
+	// Load CLI options
+	serverPort := flag.String("addr", ":4000", "Port that the server runs on")
+	flag.Parse()
+
 	// Create a new servemux and apply handler mappings.
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
@@ -21,6 +22,6 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	// Start a server on the given port and logging any potential error.
-	log.Printf("Starting server on %s", serverPort)
-	log.Fatal(http.ListenAndServe(serverPort, mux))
+	log.Printf("Starting server on %s", *serverPort)
+	log.Fatal(http.ListenAndServe(*serverPort, mux))
 }
