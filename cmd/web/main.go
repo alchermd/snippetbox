@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+// This struct acts as a container for the shared dependencies of the application.
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+}
+
 func main() {
 	// Load CLI options
 	serverPort := flag.String("addr", ":4000", "Port that the server runs on")
@@ -16,11 +22,17 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
+	// Setup dependency injection via struct initialization.
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+	}
+
 	// Create a new servemux and apply handler mappings.
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/snippet", app.showSnippet)
+	mux.HandleFunc("/snippet/create", app.createSnippet)
 
 	// Serve static assets.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
