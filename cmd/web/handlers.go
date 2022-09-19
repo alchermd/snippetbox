@@ -21,28 +21,29 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%v", snippet)
+	data := &templateData{
+		Snippets: snippets,
 	}
 
-	// files := []string{
-	// 	"./ui/html/home.page.tmpl",
-	// 	"./ui/html/footer.partial.tmpl",
-	// 	"./ui/html/base.layout.tmpl",
-	// }
+	files := []string{
+		"./ui/html/home.page.tmpl",
+		"./ui/html/footer.partial.tmpl",
+		"./ui/html/base.layout.tmpl",
+	}
 
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	// if err = ts.Execute(w, nil); err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
+	if err = ts.Execute(w, data); err != nil {
+		app.serverError(w, err)
+		return
+	}
 }
 
 // Handles showing of a snippet.
