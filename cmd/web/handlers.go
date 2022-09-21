@@ -7,15 +7,11 @@ import (
 	"strconv"
 
 	"github.com/alchermd/snippetbox/pkg/models"
+	"github.com/gorilla/mux"
 )
 
 // Define a home handler function which writes a welcome message to the response body.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// Disable the catch-all behavior.
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
 
 	snippets, err := app.snippets.Latest()
 	if err != nil {
@@ -30,7 +26,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 // Handles showing of a snippet.
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
 
 	if err != nil || id < 1 {
 		app.notFound(w)
@@ -72,5 +69,9 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/snippet?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
+}
+
+func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Create a new snippet.")
 }
