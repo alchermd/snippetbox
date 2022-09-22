@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"net/url"
 	"path/filepath"
 	"time"
 
@@ -12,6 +13,8 @@ type templateData struct {
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
 	CurrentYear int
+	FormErrors  map[string]string
+	FormData    url.Values
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {
