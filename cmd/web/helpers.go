@@ -36,7 +36,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 
 	buf := new(bytes.Buffer)
 
-	err := ts.Execute(buf, app.addDefaultData(td, r))
+	err := ts.Execute(buf, app.addDefaultData(td, w, r))
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -45,12 +45,26 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 	buf.WriteTo(w)
 }
 
-func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
+func (app *application) addDefaultData(td *templateData, w http.ResponseWriter, r *http.Request) *templateData {
 	if td == nil {
 		td = &templateData{}
 	}
 
 	td.CurrentYear = time.Now().Year()
+
+	session, _ := app.session.Get(r, "session-name")
+	storedFlash, ok := session.Values["flash"]
+	flashMessage := ""
+	if ok {
+		flashMessage = fmt.Sprintf("%v", storedFlash)
+		delete(session.Values, "flash")
+
+		if err := session.Save(r, w); err != nil {
+			app.serverError(w, err)
+		}
+	}
+
+	td.Flash = flashMessage
 
 	return td
 }

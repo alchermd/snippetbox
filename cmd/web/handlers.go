@@ -76,6 +76,14 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session, _ := app.session.Get(r, "session-name")
+	session.Values["flash"] = "Snippet successfully created!"
+
+	if err := session.Save(r, w); err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
 }
 

@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/alchermd/snippetbox/pkg/models/mysql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/sessions"
 )
 
 // This struct acts as a container for the shared dependencies of the application.
@@ -18,12 +20,14 @@ type application struct {
 	infoLog       *log.Logger
 	snippets      *mysql.SnippetModel
 	templateCache map[string]*template.Template
+	session       *sessions.CookieStore
 }
 
 func main() {
 	// Load CLI options
 	serverPort := flag.String("addr", ":4000", "Port that the server runs on")
 	dsn := flag.String("dsn", "web:p@ssword!@/snippetbox?parseTime=true", "MySQL data source name")
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	flag.Parse()
 
 	// Setup custom loggers.
@@ -41,12 +45,17 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
+	// Setup sessions
+	session := sessions.NewCookieStore([]byte(*secret))
+	session.MaxAge(int(time.Hour) * 12)
+
 	// Setup dependency injection via struct initialization.
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
 		snippets:      &mysql.SnippetModel{DB: db},
 		templateCache: templateCache,
+		session:       session,
 	}
 
 	// Initialize a server struct to use the custom error logger.
