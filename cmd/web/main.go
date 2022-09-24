@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
@@ -50,6 +51,11 @@ func main() {
 	session.Options.MaxAge = int(time.Hour) * 12
 	session.Options.Secure = true
 
+	// TLS Configuration
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
+
 	// Setup dependency injection via struct initialization.
 	app := &application{
 		errorLog:      errorLog,
@@ -61,9 +67,13 @@ func main() {
 
 	// Initialize a server struct to use the custom error logger.
 	srv := &http.Server{
-		Addr:     *serverPort,
-		ErrorLog: errorLog,
-		Handler:  app.routes(),
+		Addr:         *serverPort,
+		ErrorLog:     errorLog,
+		Handler:      app.routes(),
+		TLSConfig:    tlsConfig,
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	// Start a server on the given port and logging any potential error.
