@@ -47,7 +47,8 @@ func main() {
 
 	// Setup sessions
 	session := sessions.NewCookieStore([]byte(*secret))
-	session.MaxAge(int(time.Hour) * 12)
+	session.Options.MaxAge = int(time.Hour) * 12
+	session.Options.Secure = true
 
 	// Setup dependency injection via struct initialization.
 	app := &application{
@@ -67,7 +68,7 @@ func main() {
 
 	// Start a server on the given port and logging any potential error.
 	infoLog.Printf("Starting server on %s", srv.Addr)
-	errorLog.Fatal(srv.ListenAndServe())
+	errorLog.Fatal(srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem"))
 }
 
 func openDB(dsn string) (*sql.DB, error) {
