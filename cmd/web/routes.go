@@ -17,6 +17,11 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/snippet/create", app.createSnippet).Methods("POST")
 	mux.HandleFunc("/snippet/create", app.createSnippetForm).Methods("GET")
 	mux.HandleFunc("/snippet/{id}", app.showSnippet)
+	mux.HandleFunc("/user/login", app.loginUserForm).Methods("GET")
+	mux.HandleFunc("/user/login", app.loginUser).Methods("POST")
+	mux.HandleFunc("/user/signup", app.signupUserForm).Methods("GET")
+	mux.HandleFunc("/user/signup", app.signupUser).Methods("POST")
+	mux.HandleFunc("/user/logout", app.logoutUser).Methods("POST")
 
 	// Serve static assets.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
