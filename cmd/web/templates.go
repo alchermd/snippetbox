@@ -16,6 +16,7 @@ type templateData struct {
 	Form            *forms.Form
 	Flash           string
 	IsAuthenticated bool
+	CSRFTemplateTag template.HTML
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

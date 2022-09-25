@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/gorilla/csrf"
 )
 
 // Writes a generic server error response while logging debugging information to stderr.
@@ -66,6 +68,7 @@ func (app *application) addDefaultData(td *templateData, w http.ResponseWriter, 
 
 	td.Flash = flashMessage
 	td.IsAuthenticated = app.isAuthenticated(r)
+	td.CSRFTemplateTag = csrf.TemplateField(r)
 
 	return td
 }

@@ -4,6 +4,7 @@
 
 {{define "main"}}
 <form action="/snippet/create" method="POST">
+    {{.CSRFTemplateTag}}
     <div>
         <label for="title">Title:</label>
         {{with .Form.Errors.title}}

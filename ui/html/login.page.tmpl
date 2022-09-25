@@ -4,6 +4,7 @@
 
 {{define "main"}}
 <form action="/user/login" method="post">
+    {{.CSRFTemplateTag}}
     {{with .Form}}
     {{with .Errors.Get "generic"}}
     <div class="error">{{.}}</div>

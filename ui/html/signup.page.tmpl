@@ -4,6 +4,7 @@
 
 {{define "main"}}
 <form action="/user/signup" method="post">
+    {{.CSRFTemplateTag}}
     {{with .Form}}
     <div>
         <label for="name">Name:</label>
