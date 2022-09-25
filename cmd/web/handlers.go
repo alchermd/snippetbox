@@ -175,5 +175,14 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) logoutUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Logout the user.")
+	session, _ := app.session.Get(r, "session-name")
+	delete(session.Values, "authenticatedUserID")
+	session.Values["flash"] = "You have been logged out successfully!"
+
+	if err := session.Save(r, w); err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
