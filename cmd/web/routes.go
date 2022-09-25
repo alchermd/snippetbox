@@ -14,8 +14,8 @@ func (app *application) routes() http.Handler {
 	// Create a new servemux and apply handler mappings.
 	mux := mux.NewRouter()
 	mux.HandleFunc("/", app.home).Methods("GET")
-	mux.HandleFunc("/snippet/create", app.createSnippet).Methods("POST")
-	mux.HandleFunc("/snippet/create", app.createSnippetForm).Methods("GET")
+	mux.HandleFunc("/snippet/create", app.requireAuthentication(http.HandlerFunc(app.createSnippet)).ServeHTTP).Methods("POST")
+	mux.HandleFunc("/snippet/create", app.requireAuthentication(http.HandlerFunc(app.createSnippetForm)).ServeHTTP).Methods("GET")
 	mux.HandleFunc("/snippet/{id}", app.showSnippet)
 	mux.HandleFunc("/user/login", app.loginUserForm).Methods("GET")
 	mux.HandleFunc("/user/login", app.loginUser).Methods("POST")

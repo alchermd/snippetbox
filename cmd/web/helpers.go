@@ -65,6 +65,16 @@ func (app *application) addDefaultData(td *templateData, w http.ResponseWriter, 
 	}
 
 	td.Flash = flashMessage
+	td.IsAuthenticated = app.isAuthenticated(r)
 
 	return td
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	session, err := app.session.Get(r, "session-name")
+	if err != nil {
+		return false
+	}
+
+	return session.Values["authenticatedUserID"] != nil
 }

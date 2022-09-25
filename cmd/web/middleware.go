@@ -33,3 +33,24 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (app *application) requireAuthentication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !app.isAuthenticated(r) {
+			session, _ := app.session.Get(r, "session-name")
+			session.Values["flash"] = "You need to login first."
+
+			if err := session.Save(r, w); err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
+		}
+
+		w.Header().Add("Cache-Control", "no-store")
+
+		next.ServeHTTP(w, r)
+	})
+}
