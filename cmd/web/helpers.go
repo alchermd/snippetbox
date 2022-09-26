@@ -74,10 +74,11 @@ func (app *application) addDefaultData(td *templateData, w http.ResponseWriter, 
 }
 
 func (app *application) isAuthenticated(r *http.Request) bool {
-	session, err := app.session.Get(r, "session-name")
-	if err != nil {
+	isAuthenticated, ok := r.Context().Value(contextKeyIsAuthenticated).(bool)
+
+	if !ok {
 		return false
 	}
 
-	return session.Values["authenticatedUserID"] != nil
+	return isAuthenticated
 }

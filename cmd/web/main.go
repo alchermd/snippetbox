@@ -25,6 +25,10 @@ type application struct {
 	session       *sessions.CookieStore
 }
 
+type contextKey string
+
+const contextKeyIsAuthenticated = contextKey("isAuthenticated")
+
 func main() {
 	// Load CLI options
 	serverPort := flag.String("addr", ":4000", "Port that the server runs on")
